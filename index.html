@@ -18,6 +18,10 @@
   .playlist-cover { text-align:center; margin-bottom:20px; }
   .playlist-cover img { width:100%; max-width:880px; border-radius:8px; }
 
+  /* Плеер видео */
+  #videoPlayer { width:100%; max-width:880px; margin:0 auto 20px; display:none; }
+  #videoPlayer video { width:100%; border-radius:6px; }
+
   /* Видео вертикально, как на YouTube */
   .videos { display:flex; flex-direction:column; gap:12px; }
   .video-item { display:flex; gap:12px; background:#fff; border-radius:6px; overflow:hidden; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:transform 0.1s; }
@@ -46,12 +50,16 @@
       <img src="" alt="Обложка плейлиста">
     </div>
 
+    <!-- Встроенный плеер -->
+    <div id="videoPlayer">
+      <video controls src=""></video>
+    </div>
+
     <!-- Список видео -->
     <div class="videos" id="videoList"></div>
   </div>
 
 <script>
-  // Данные плейлистов
   const playlists = [
     {
       name: "Утренние практики",
@@ -74,6 +82,8 @@
   const playlistTabs = document.getElementById('playlistTabs');
   const playlistCover = document.getElementById('playlistCover').querySelector('img');
   const videoList = document.getElementById('videoList');
+  const videoPlayerContainer = document.getElementById('videoPlayer');
+  const videoPlayer = videoPlayerContainer.querySelector('video');
 
   // Создаем табы
   playlists.forEach((playlist,index)=>{
@@ -92,6 +102,10 @@
     const playlist = playlists[index];
     playlistCover.src = playlist.cover;
 
+    // Скрыть плеер при смене плейлиста
+    videoPlayerContainer.style.display='none';
+    videoPlayer.src='';
+
     // Видео вертикально
     videoList.innerHTML='';
     playlist.videos.forEach(video=>{
@@ -105,6 +119,15 @@
           <div class="video-duration">${video.duration}</div>
         </div>
       `;
+      // Клик по видео — открываем плеер
+      videoDiv.addEventListener('click',()=>{
+        videoPlayer.src = video.url;
+        videoPlayerContainer.style.display = 'block';
+        videoPlayer.play();
+        // Прокрутка к плееру
+        videoPlayer.scrollIntoView({behavior:'smooth'});
+      });
+
       videoList.appendChild(videoDiv);
     });
   }
