@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Йога Плейлисты</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:10px; }
-    .container { max-width: 800px; margin:0 auto; }
-    h1 { text-align:center; color:#333; margin-bottom:20px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Йога Плейлисты</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f9f9f9; margin:0; padding:0; }
+  .container { max-width:900px; margin:0 auto; padding:20px; }
+  h1 { text-align:center; margin-bottom:20px; color:#222; }
 
-    /* Горизонтальный список плейлистов */
-    .playlist-tabs { display: flex; overflow-x:auto; gap:10px; margin-bottom:20px; padding-bottom:10px; }
-    .playlist-tab { padding:10px 20px; background:#fff; border-radius:20px; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-    .playlist-tab.active { background:#ffcc80; font-weight:bold; }
+  /* Горизонтальные табы */
+  .playlist-tabs { display:flex; overflow-x:auto; gap:10px; margin-bottom:20px; padding-bottom:10px; }
+  .playlist-tab { padding:10px 20px; background:#fff; border-radius:20px; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .playlist-tab.active { background:#ffcc80; font-weight:bold; }
 
-    /* Общая обложка */
-    .playlist-cover { text-align:center; margin-bottom:20px; }
-    .playlist-cover img { width:50%; border-radius:10px; }
+  /* Общая обложка плейлиста */
+  .playlist-cover { text-align:center; margin-bottom:20px; }
+  .playlist-cover img { width:100%; max-width:880px; border-radius:8px; }
 
-    /* Видео вертикально */
-    .videos { display:flex; flex-direction:column; gap:15px; }
-    .video-item { display:flex; background:#fff; border-radius:10px; overflow:hidden; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:transform 0.2s; }
-    .video-item:hover { transform: scale(1.01); }
-    .video-item img { width:150px; height:90px; object-fit:cover; }
-    .video-info { padding:10px; display:flex; flex-direction:column; justify-content:center; }
-    .video-title { font-weight:bold; font-size:16px; margin-bottom:5px; }
-    .video-desc { font-size:14px; color:#555; margin-bottom:5px; }
-    .video-duration { font-size:12px; color:#777; }
-    
-    @media (max-width:600px){
-      .playlist-cover img { width:70%; }
-      .video-item img { width:120px; height:70px; }
-    }
-  </style>
+  /* Видео вертикально, как на YouTube */
+  .videos { display:flex; flex-direction:column; gap:12px; }
+  .video-item { display:flex; gap:12px; background:#fff; border-radius:6px; overflow:hidden; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:transform 0.1s; }
+  .video-item:hover { transform: scale(1.01); }
+  .video-item img { width:160px; height:90px; object-fit:cover; flex-shrink:0; }
+  .video-info { padding:10px; display:flex; flex-direction:column; justify-content:center; }
+  .video-title { font-weight:bold; font-size:16px; color:#111; margin-bottom:4px; }
+  .video-desc { font-size:14px; color:#555; margin-bottom:4px; }
+  .video-duration { font-size:12px; color:#777; }
+
+  @media (max-width:600px){
+    .playlist-cover img { max-width:100%; }
+    .video-item img { width:120px; height:68px; }
+  }
+</style>
 </head>
 <body>
   <div class="container">
@@ -46,73 +46,71 @@
       <img src="" alt="Обложка плейлиста">
     </div>
 
-    <!-- Видео плейлист -->
+    <!-- Список видео -->
     <div class="videos" id="videoList"></div>
   </div>
 
-  <script>
-    // Данные плейлистов
-    const playlists = [
-      {
-        name: "Утренние практики",
-        cover: "covers/general-morning.jpg",
-        videos: [
-          { title: "Йога для пробуждения", desc: "Легкая разминка для начала дня", cover: "covers/video1.jpg", duration: "15:32", url: "videos/video1.mp4" },
-          { title: "Дыхательные практики", desc: "Пробуждаем тело и дыхание", cover: "covers/video2.jpg", duration: "10:20", url: "videos/video2.mp4" }
-        ]
-      },
-      {
-        name: "Вечерние практики",
-        cover: "covers/general-evening.jpg",
-        videos: [
-          { title: "Расслабляющая йога", desc: "Снимаем напряжение после работы", cover: "covers/video3.jpg", duration: "20:15", url: "videos/video3.mp4" },
-          { title: "Йога перед сном", desc: "Спокойная практика для сна", cover: "covers/video4.jpg", duration: "12:45", url: "videos/video4.mp4" }
-        ]
-      }
-    ];
-
-    const playlistTabs = document.getElementById('playlistTabs');
-    const playlistCover = document.getElementById('playlistCover').querySelector('img');
-    const videoList = document.getElementById('videoList');
-
-    // Создаем табы
-    playlists.forEach((playlist,index)=>{
-      const tab = document.createElement('div');
-      tab.className='playlist-tab';
-      tab.textContent=playlist.name;
-      if(index===0) tab.classList.add('active');
-      tab.addEventListener('click',()=>showPlaylist(index));
-      playlistTabs.appendChild(tab);
-    });
-
-    function showPlaylist(index){
-      document.querySelectorAll('.playlist-tab').forEach(tab=>tab.classList.remove('active'));
-      document.querySelectorAll('.playlist-tab')[index].classList.add('active');
-
-      const playlist = playlists[index];
-
-      // Общая обложка
-      playlistCover.src = playlist.cover;
-
-      // Видео вертикально
-      videoList.innerHTML='';
-      playlist.videos.forEach(video=>{
-        const videoDiv = document.createElement('div');
-        videoDiv.className='video-item';
-        videoDiv.innerHTML=`
-          <img src="${video.cover}" alt="${video.title}">
-          <div class="video-info">
-            <div class="video-title">${video.title}</div>
-            <div class="video-desc">${video.desc}</div>
-            <div class="video-duration">${video.duration}</div>
-          </div>
-        `;
-        videoList.appendChild(videoDiv);
-      });
+<script>
+  // Данные плейлистов
+  const playlists = [
+    {
+      name: "Утренние практики",
+      cover: "covers/general-morning.jpg",
+      videos: [
+        { title: "Йога для пробуждения", desc: "Легкая разминка для начала дня", cover: "covers/video1.jpg", duration: "15:32", url: "videos/video1.mp4" },
+        { title: "Дыхательные практики", desc: "Пробуждаем тело и дыхание", cover: "covers/video2.jpg", duration: "10:20", url: "videos/video2.mp4" }
+      ]
+    },
+    {
+      name: "Вечерние практики",
+      cover: "covers/general-evening.jpg",
+      videos: [
+        { title: "Расслабляющая йога", desc: "Снимаем напряжение после работы", cover: "covers/video3.jpg", duration: "20:15", url: "videos/video3.mp4" },
+        { title: "Йога перед сном", desc: "Спокойная практика для сна", cover: "covers/video4.jpg", duration: "12:45", url: "videos/video4.mp4" }
+      ]
     }
+  ];
 
-    // Показать первый плейлист по умолчанию
-    showPlaylist(0);
-  </script>
+  const playlistTabs = document.getElementById('playlistTabs');
+  const playlistCover = document.getElementById('playlistCover').querySelector('img');
+  const videoList = document.getElementById('videoList');
+
+  // Создаем табы
+  playlists.forEach((playlist,index)=>{
+    const tab = document.createElement('div');
+    tab.className='playlist-tab';
+    tab.textContent=playlist.name;
+    if(index===0) tab.classList.add('active');
+    tab.addEventListener('click',()=>showPlaylist(index));
+    playlistTabs.appendChild(tab);
+  });
+
+  function showPlaylist(index){
+    document.querySelectorAll('.playlist-tab').forEach(tab=>tab.classList.remove('active'));
+    document.querySelectorAll('.playlist-tab')[index].classList.add('active');
+
+    const playlist = playlists[index];
+    playlistCover.src = playlist.cover;
+
+    // Видео вертикально
+    videoList.innerHTML='';
+    playlist.videos.forEach(video=>{
+      const videoDiv = document.createElement('div');
+      videoDiv.className='video-item';
+      videoDiv.innerHTML=`
+        <img src="${video.cover}" alt="${video.title}">
+        <div class="video-info">
+          <div class="video-title">${video.title}</div>
+          <div class="video-desc">${video.desc}</div>
+          <div class="video-duration">${video.duration}</div>
+        </div>
+      `;
+      videoList.appendChild(videoDiv);
+    });
+  }
+
+  // Показать первый плейлист по умолчанию
+  showPlaylist(0);
+</script>
 </body>
 </html>
