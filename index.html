@@ -7,27 +7,30 @@
   <style>
     body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:10px; }
     .container { max-width: 800px; margin:0 auto; }
-    h1 { text-align:center; color:#333; }
-    
+    h1 { text-align:center; color:#333; margin-bottom:20px; }
+
     /* Горизонтальный список плейлистов */
-    .playlist-tabs { display: flex; overflow-x:auto; gap:10px; margin:20px 0; padding-bottom:10px; }
+    .playlist-tabs { display: flex; overflow-x:auto; gap:10px; margin-bottom:20px; padding-bottom:10px; }
     .playlist-tab { padding:10px 20px; background:#fff; border-radius:20px; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .playlist-tab.active { background:#ffcc80; font-weight:bold; }
 
     /* Общая обложка */
-    .playlist-cover img { width:100%; border-radius:10px; }
+    .playlist-cover { text-align:center; margin-bottom:20px; }
+    .playlist-cover img { width:50%; border-radius:10px; }
 
-    /* Видео-плейлист */
-    .videos { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
-    .video-item { width:calc(33% - 10px); background:#fff; border-radius:10px; overflow:hidden; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:transform 0.2s;}
-    .video-item:hover { transform: scale(1.03); }
-    .video-item img { width:100%; height:120px; object-fit:cover; }
-    .video-info { padding:5px; }
-    .video-title { font-weight:bold; font-size:14px; margin-bottom:3px; }
-    .video-duration { font-size:12px; color:#555; }
-
-    @media (max-width: 600px) {
-      .video-item { width: calc(50% - 10px); }
+    /* Видео вертикально */
+    .videos { display:flex; flex-direction:column; gap:15px; }
+    .video-item { display:flex; background:#fff; border-radius:10px; overflow:hidden; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:transform 0.2s; }
+    .video-item:hover { transform: scale(1.01); }
+    .video-item img { width:150px; height:90px; object-fit:cover; }
+    .video-info { padding:10px; display:flex; flex-direction:column; justify-content:center; }
+    .video-title { font-weight:bold; font-size:16px; margin-bottom:5px; }
+    .video-desc { font-size:14px; color:#555; margin-bottom:5px; }
+    .video-duration { font-size:12px; color:#777; }
+    
+    @media (max-width:600px){
+      .playlist-cover img { width:70%; }
+      .video-item img { width:120px; height:70px; }
     }
   </style>
 </head>
@@ -39,7 +42,7 @@
     <div class="playlist-tabs" id="playlistTabs"></div>
 
     <!-- Общая обложка -->
-    <div class="playlist-cover" id="playlistCover" style="margin-bottom:20px;">
+    <div class="playlist-cover" id="playlistCover">
       <img src="" alt="Обложка плейлиста">
     </div>
 
@@ -54,16 +57,16 @@
         name: "Утренние практики",
         cover: "covers/general-morning.jpg",
         videos: [
-          { title: "Йога для пробуждения", cover: "covers/video1.jpg", duration: "15:32", url: "videos/video1.mp4" },
-          { title: "Дыхательные практики", cover: "covers/video2.jpg", duration: "10:20", url: "videos/video2.mp4" }
+          { title: "Йога для пробуждения", desc: "Легкая разминка для начала дня", cover: "covers/video1.jpg", duration: "15:32", url: "videos/video1.mp4" },
+          { title: "Дыхательные практики", desc: "Пробуждаем тело и дыхание", cover: "covers/video2.jpg", duration: "10:20", url: "videos/video2.mp4" }
         ]
       },
       {
         name: "Вечерние практики",
         cover: "covers/general-evening.jpg",
         videos: [
-          { title: "Расслабляющая йога", cover: "covers/video3.jpg", duration: "20:15", url: "videos/video3.mp4" },
-          { title: "Йога перед сном", cover: "covers/video4.jpg", duration: "12:45", url: "videos/video4.mp4" }
+          { title: "Расслабляющая йога", desc: "Снимаем напряжение после работы", cover: "covers/video3.jpg", duration: "20:15", url: "videos/video3.mp4" },
+          { title: "Йога перед сном", desc: "Спокойная практика для сна", cover: "covers/video4.jpg", duration: "12:45", url: "videos/video4.mp4" }
         ]
       }
     ];
@@ -72,35 +75,35 @@
     const playlistCover = document.getElementById('playlistCover').querySelector('img');
     const videoList = document.getElementById('videoList');
 
-    // Создаем табы для плейлистов
-    playlists.forEach((playlist, index) => {
+    // Создаем табы
+    playlists.forEach((playlist,index)=>{
       const tab = document.createElement('div');
-      tab.className = 'playlist-tab';
-      tab.textContent = playlist.name;
-      if(index === 0) tab.classList.add('active');
-      tab.addEventListener('click', () => showPlaylist(index));
+      tab.className='playlist-tab';
+      tab.textContent=playlist.name;
+      if(index===0) tab.classList.add('active');
+      tab.addEventListener('click',()=>showPlaylist(index));
       playlistTabs.appendChild(tab);
     });
 
     function showPlaylist(index){
-      // Убираем активность со всех табов
-      document.querySelectorAll('.playlist-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.playlist-tab').forEach(tab=>tab.classList.remove('active'));
       document.querySelectorAll('.playlist-tab')[index].classList.add('active');
 
       const playlist = playlists[index];
 
-      // Показать общую обложку
+      // Общая обложка
       playlistCover.src = playlist.cover;
 
-      // Показать видео
-      videoList.innerHTML = '';
-      playlist.videos.forEach(video => {
+      // Видео вертикально
+      videoList.innerHTML='';
+      playlist.videos.forEach(video=>{
         const videoDiv = document.createElement('div');
-        videoDiv.className = 'video-item';
-        videoDiv.innerHTML = `
+        videoDiv.className='video-item';
+        videoDiv.innerHTML=`
           <img src="${video.cover}" alt="${video.title}">
           <div class="video-info">
             <div class="video-title">${video.title}</div>
+            <div class="video-desc">${video.desc}</div>
             <div class="video-duration">${video.duration}</div>
           </div>
         `;
